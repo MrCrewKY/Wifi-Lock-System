@@ -1,0 +1,63 @@
+#include <Servo.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+
+int servoPin=11;
+int buttonPin=10;
+int LOCK=90;
+int UNLOCK=180;
+int servoPos=0;
+
+int buttonState = HIGH;
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
+Servo myservo;
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+void setup(){
+  myservo.attach(servoPin);
+  pinMode(buttonPin, INPUT);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Welcome !");
+  delay(5000);
+  /*lcd.setCursor(0,0);
+  lcd.print("Please enter");
+  lcd.setCursor(0,1);
+  lcd.print("password");*/
+}
+
+
+void loop() {
+  int reading = digitalRead(buttonPin);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      if (buttonState == LOW) {
+        if (servoPos == LOCK) {
+          myservo.write(UNLOCK);
+          servoPos = UNLOCK;
+          lcd.clear();
+          lcd.print("Door Unlocked!");
+        } else if (servoPos == UNLOCK || servoPos == 0) {
+          myservo.write(LOCK);
+          servoPos = LOCK;
+          lcd.clear();
+          lcd.print("Door Locked!");
+        }
+      }
+    }
+  }
+
+  lastButtonState = reading;
+}
