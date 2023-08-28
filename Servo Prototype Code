@@ -1,5 +1,6 @@
 //Designed in TinkerCAD, written using C++
 //AUTHOR: HENRY LIM KIM YUAN
+//Uses one pushbutton to control movement, servo initializes by going to 180 angle
 #include <Servo.h>
 
 int servoPin=11;
