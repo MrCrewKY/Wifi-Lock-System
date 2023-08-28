@@ -1,0 +1,49 @@
+//Designed in TinkerCAD, written using C++
+//AUTHOR: HENRY LIM KIM YUAN
+#include <Servo.h>
+
+int servoPin=11;
+int buttonPin=10;
+int LOCK=90;
+int UNLOCK=180;
+int servoPos=LOCK;
+
+int buttonState = HIGH;
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
+
+Servo myservo;
+
+void setup(){
+  myservo.attach(servoPin);
+  pinMode(buttonPin, INPUT);
+}
+
+
+void loop() {
+  int reading = digitalRead(buttonPin);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      if (buttonState == LOW) {
+        if (servoPos == LOCK) {
+          myservo.write(UNLOCK);
+          servoPos = UNLOCK;
+        } else if (servoPos == UNLOCK) {
+          myservo.write(LOCK);
+          servoPos = LOCK;
+        }
+      }
+    }
+  }
+
+  lastButtonState = reading;
+}
