@@ -1,0 +1,43 @@
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+
+#define wlc 0
+#define enterPW 1
+
+int state=wlc;
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+void stateMachine(){
+  switch (state) {
+    case wlc:
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Welcome !");
+    delay(3000);
+    state = enterPW;
+    break;
+
+    case enterPW:
+    lcd.setCursor(0,0);
+    lcd.print("Please enter");
+    lcd.setCursor(0,1);
+    lcd.print("password");
+    delay(5000);
+    state = wlc;
+    break;
+  }
+}
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Starting...");
+  delay(3000);
+
+}
+
+void loop() {
+  stateMachine();
+}
