@@ -6,43 +6,51 @@
 //LCD State Machine
 #define wlc 0
 #define enterPW 1
+#define doorLock 2
 
 LiquidCrystal_I2C lcd(0x27,16,2);
 
 int state=wlc;
 
 void stateMachine(){
-
-  if(header.indexOf("GET /15/on") >= 0){
-    lcd.clear();
-    lcd.print("Door Unlocked!");
-  }
-
-  else if (header.indexOf("GET /15/off" >= 0){
-    lcd.clear();
-    lcd.print("Door Locked!");
-  }
-
-  else{
     switch (state) {
-      case wlc:
+      case wlc: {
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Welcome !");
       delay(3000);
       state = enterPW;
       break;
+      }
 
-      case enterPW:
+      case enterPW:{
       lcd.setCursor(0,0);
       lcd.print("Please enter");
       lcd.setCursor(0,1);
       lcd.print("password");
       delay(5000);
-      state = wlc;
+      //
+      if (password is correct){
+        state=doorLock;
+      }
+      else {
+        state = wlc;
+      }
       break;
+      }
+
+      case doorLock:{
+      if(header.indexOf("GET /15/on") >= 0){
+      lcd.clear();
+      lcd.print("Door Unlocked!");
+      }
+
+      else if (header.indexOf("GET /15/off") >= 0){
+        lcd.clear();
+        lcd.print("Door Locked!");
+      }
+      }
     }
-  }
 }
 
 //Servo
