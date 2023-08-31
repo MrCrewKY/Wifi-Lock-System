@@ -1,68 +1,16 @@
 #include <ESP8266WiFi.h>
-#include <Servo.h>
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h>
+#include <Servo.h>
 
-//LCD State Machine
-#define wlc 0
-#define enterPW 1
-#define doorLock 2
+//LCD
 
-LiquidCrystal_I2C lcd(0x27,16,2);
-
-int state=wlc;
-
-void stateMachine(){
-    switch (state) {
-      case wlc: {
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Welcome !");
-      delay(3000);
-      state = enterPW;
-      break;
-      }
-
-      case enterPW:{
-      lcd.setCursor(0,0);
-      lcd.print("Please enter");
-      lcd.setCursor(0,1);
-      lcd.print("password");
-      delay(5000);
-      //
-      if (password is correct){
-        state=doorLock;
-      }
-      else {
-        state = wlc;
-      }
-      break;
-      }
-
-      case doorLock:{
-      if(header.indexOf("GET /15/on") >= 0){
-      lcd.clear();
-      lcd.print("Door Unlocked!");
-      }
-
-      else if (header.indexOf("GET /15/off") >= 0){
-        lcd.clear();
-        lcd.print("Door Locked!");
-      }
-      }
-    }
-}
+LiquidCrystal_I2C lcd(0x27, 16, 2);  
 
 //Servo
 int servoPin=15;
-int LOCK=90;
-int UNLOCK=180;
+int LOCK=180;
+int UNLOCK=90;
 int servoPos=0;
-
-int buttonState = HIGH;
-int lastButtonState = HIGH;
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
 
 Servo myservo;
 
@@ -87,13 +35,11 @@ unsigned long previousTime = 0;
 const long timeoutTime = 2000;
 
 void setup() {
-  myservo.attach(servoPin);
   lcd.init();
   lcd.backlight();
-  lcd.setCursor(0,0);
-  lcd.print("Starting...");
-  delay(3000);
-
+  lcd.setCursor(0, 0);
+  lcd.print("Hello, World!");
+  myservo.attach(servoPin);
   Serial.begin(9600);
 
   // Connect to Wi-Fi network with SSID and password
@@ -142,13 +88,17 @@ void loop(){
               Serial.println("GPIO 15 on");
               output15State = "on";
               myservo.write(UNLOCK);
+              lcd.clear();
+              lcd.setCursor(0,1);
+              lcd.print("DOOR UNLOCKED");
             } else if (header.indexOf("GET /15/off") >= 0) {
               Serial.println("GPIO 15 off");
               output15State = "off";
               myservo.write(LOCK);
+              lcd.clear();
+              lcd.setCursor(0,1);
+              lcd.print("DOOR LOCKED");
             } 
-
-            stateMachine();
  
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -195,4 +145,3 @@ void loop(){
     Serial.println("");
   }
 }
-
